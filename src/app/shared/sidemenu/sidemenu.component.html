@@ -1,0 +1,30 @@
+<!-- <p>sidemenu works!</p> -->
+
+<h2>Template</h2>
+
+<hr>
+
+<ul class="list-group">
+    <li *ngFor="let item of templateMenu" 
+        class="list-group-item" 
+        [routerLink] = "item.ruta"
+        routerLinkActive="active">
+        {{item.texto}}
+    </li>
+</ul>
+
+<!-- Esto tambien genera una separacion -->
+<!-- <br> -->
+
+<h2 class="mt-4">Reactive</h2>
+
+<hr>
+
+<ul class="list-group">
+    <li *ngFor="let item of reactiveMenu" 
+        class="list-group-item" 
+        [routerLink] = "item.ruta"
+        routerLinkActive="active">
+        {{item.texto}}
+    </li>
+</ul>
