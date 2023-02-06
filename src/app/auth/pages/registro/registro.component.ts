@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { emailPattern, nombreApellidoPattern, noPuedeSerStrider } from 'src/app/shared/validators/validaciones';
 import { ValidatorService } from 'src/app/shared/validators/validator.service';
+import { EmailValidatorService } from '../../../shared/validators/email-validator.service';
 
 @Component({
   selector: 'app-registro',
@@ -15,9 +16,12 @@ export class RegistroComponent implements OnInit {
   //nombreApellidoPattern: string = '([a-zA-Z]+) ([a-zA-Z]+)';
   //emailPattern: string = "^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$";
 
+  //emailErrorMsg: string = "";
+
 
   constructor(  private fb: FormBuilder,
-                private validatorSerice: ValidatorService) { }  //Otra forma de usar las validaciones es por sercivio
+                private validatorSerice: ValidatorService,
+                private emailValidator: EmailValidatorService) { }  //Otra forma de usar las validaciones es por sercivio
                                                                 //Se inyecta el servicio aqui en el contructor
 
 
@@ -25,7 +29,9 @@ export class RegistroComponent implements OnInit {
     this.miFormulario.reset({
       nombre: 'Javier Restan',
       email: 'javier.restan@microfost.com',
-      username: 'jrestan'
+      username: 'jrestan',
+      password: '123456',
+      repassword: '123456'
     })
   }
 
@@ -54,7 +60,7 @@ export class RegistroComponent implements OnInit {
   //Aqui se usa las variables y funciones declaradas en el servicio
   miFormulario: FormGroup = this.fb.group({
     nombre: ['', [Validators.required, Validators.pattern( this.validatorSerice.nombreApellidoPattern )]],
-    email: ['', [Validators.required, Validators.pattern( this.validatorSerice.emailPattern )]],
+    email: ['', [Validators.required, Validators.pattern( this.validatorSerice.emailPattern )], [this.emailValidator]],
     username: ['', [Validators.required, this.validatorSerice.noPuedeSerStrider ]],
     password: ['', [Validators.required, Validators.minLength(6) ]],
     repassword: ['', [Validators.required ]]
@@ -79,6 +85,35 @@ export class RegistroComponent implements OnInit {
 
   getErrorsCampo(campo: string){
     return this.miFormulario.get(campo)?.errors;
+  }
+
+  /*
+  emailRequired(){
+    return this.miFormulario.get('email')?.errors?.['required'] &&
+           this.miFormulario.get('email')?.touched;
+  }
+  emailFormato(){
+    return this.miFormulario.get('email')?.errors?.['pattern'] &&
+           this.miFormulario.get('email')?.touched;
+  }
+  emailTomado(){
+    return this.miFormulario.get('email')?.errors?.['emailTomado'] &&
+           this.miFormulario.get('email')?.touched;
+  }*/
+  //Esta solucion es mas practica que la anterior comentada
+  get emailErrorMsg(): string 
+  {
+    const errors = this.miFormulario.get('email')?.errors;
+    if(errors?.['required']){
+      return "El correo es obligatorio";
+    }
+    else if(errors?.['pattern']){
+      return "Debe ser un formato de correo valido";
+    }
+    else if(errors?.['emailTomado']){
+      return "El correo ya fue tomado";
+    }
+    return "";
   }
 
 }
